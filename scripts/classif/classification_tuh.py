@@ -307,7 +307,7 @@ if __name__ == "__main__":
 
         """
         eegclipmodel = EEGClipModel.load_from_checkpoint(
-            results_dir + "/models/EEGClip_100_medicalai/ClinicalBERT_64.ckpt"
+            results_dir + "/models/EEGClip_n_epochs_20.ckpt"
         )
 
         EEGEncoder = torch.nn.Sequential(
@@ -376,4 +376,4 @@ if __name__ == "__main__":
         valid_loader,
     )
 
-    # trainer.save_checkpoint(results_dir + "/models/pathological_75.ckpt")
+    trainer.save_checkpoint(results_dir + "/models/pathological_75.ckpt")

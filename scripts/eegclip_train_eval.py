@@ -264,13 +264,11 @@ def run_eegclip_training(args):
         train_loader,
         valid_loader,
     )
-    """
     trainer.save_checkpoint(results_dir + "/models/EEGClip_100_"+
                                             text_encoder_name +
                                             "_" +
                                             str(projected_emb_dim)+
                                             ".ckpt")
-    """
 
 
 @dataclass

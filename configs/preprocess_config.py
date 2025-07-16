@@ -19,7 +19,7 @@ if nailcluster:
 
 # if using KISlurm :
 else:
-    results_dir = "/home/ndirt/dev/neuro_ai/EEGClip/results/"
+    results_dir = "results/"
     tuh_data_dir = "/data/datasets/TUH/EEG/tuh_eeg_abnormal/v2.0.0/edf/"
     embs_df_path = (
         "/home/ndirt/dev/neuro_ai/EEGClip/scripts/text_embedding/embs_df.csv"
