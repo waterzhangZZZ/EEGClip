@@ -1,9 +1,9 @@
-# EEGClip: Learning EEG Representations from Natural Language Descriptions
+# EEG-CLIP: Learning EEG Representations from Natural Language Descriptions
 
-EEGClip is a contrastive learning framework that aligns EEG time series data with their corresponding clinical text descriptions in a shared embedding space. Inspired by CLIP (Contrastive Language-Image Pretraining), EEGClip enables versatile EEG representation learning for improved pathology detection and other downstream tasks in low-data regimes.
+EEG-CLIP is a contrastive learning framework that aligns EEG time series data with their corresponding clinical text descriptions in a shared embedding space. Inspired by CLIP (Contrastive Language-Image Pretraining), EEG-CLIP enables versatile EEG representation learning for improved pathology detection and other downstream tasks in low-data regimes.
 
 <p align="center">
-  <img src="results/publication_plots/few_shot_under_50.png" alt="EEGClip results on the age classification task" width="600"/>
+  <img src="results/publication_plots/few_shot_under_50.png" alt="EEG-CLIP results on the age classification task" width="600"/>
 </p>
 
 
@@ -65,7 +65,7 @@ python scripts/classif/classification_zero_shot_tuh.py
 
 ## Citation
 
-If you use EEGClip in your research, please cite our paper:
+If you use EEG-CLIP in your research, please cite our paper:
 
 ```bibtex
 @ARTICLE{10.3389/frobt.2025.1625731,
