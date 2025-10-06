@@ -104,7 +104,6 @@ class ClipLoss(nn.Module):
         return total_loss, logits_per_image
 
 
-
 # old loss function
     
 def cross_entropy(preds, targets, reduction="none"):

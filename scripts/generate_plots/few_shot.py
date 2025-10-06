@@ -7,7 +7,7 @@ from matplotlib.ticker import FixedLocator
 from sympy import Si
 
 # Define task name as in your original script
-task_name = "gender"
+task_name = "gender"  # Change this to "pathological" or "eegclip" as needed
 
 # Load your actual data
 runs_df = pd.read_csv("results/classif_few_shot_test_set.csv")
@@ -28,7 +28,7 @@ runs_df = runs_df[runs_df.train_frac != 1]
 # Rename weights elements as in your original script
 runs_df["weights"] = runs_df["weights"].replace(
     ["eegclip_frozen", "pathological_frozen", "under_50_frozen", "random_trainable"],
-    ["EEG-Clip", "Irrelevant Task", "Irrelevant Task", "Task-Specific"]
+    ["EEG-Clip", "Alternative Task", "Alternative Task", "Task-Specific"]
 )
 
 # Set plot style with significantly larger font scaling
@@ -78,7 +78,7 @@ ax.set_xticklabels(fraction_labels)
 
 # Get the unique weight types to assign specific markers
 weight_types = task_data['weights'].unique()
-markers = {'EEG-Clip': 'p', 'Irrelevant Task': 'o', 'Task-Specific': 's'}
+markers = {'EEG-Clip': 'p', 'Alternative Task': 'o', 'Task-Specific': 's'}
 
 # Customize each line and its markers
 for i, line in enumerate(ax.get_lines()):
@@ -100,6 +100,7 @@ for i, line in enumerate(ax.get_lines()):
 # Customize axis labels and title with much larger fonts
 ax.set_xlabel("Percentage of the training set", fontsize=50, fontweight='bold')
 ax.set_ylabel("Balanced accuracy", fontsize=50, fontweight='bold')
+ax.set_ylim(0.48, 0.82)  # Adjust x-axis limits to fit the new display positions
 task_name = "age" if task_name == "under_50" else task_name
 ax.set_title(f"Evaluation Task : {task_name.capitalize()}", fontsize=50, fontweight='bold')
 
@@ -114,7 +115,7 @@ legend = plt.legend(loc='best', handlelength=3, fontsize=50, frameon=True,
 legend_texts = [text.get_text() for text in legend.get_texts()]
 
 # Ensure legend shows correct markers with white fill and colored outlines
-for i, handle in enumerate(legend.legendHandles):
+for i, handle in enumerate(legend.legend_handles):
     handle.set_linewidth(6)
     
     # Make sure marker is displayed in legend

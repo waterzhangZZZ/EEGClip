@@ -9,8 +9,8 @@ dataset:
 
 
 eegclip:
-  lr: 5e-3
-  weight_decay: 5e-4
+  lr: 0.005
+  weight_decay: 0.0005
   dropout: 0.1
   projected_emb_dim: 64
   num_fc_layers: 2
@@ -23,13 +23,13 @@ eegclip:
   text_encoder:
     pretrained: true
     trainable: false
-    emb_dim: 4096
-    pretrained_name: "Salesforce/SFR-Embedding-Mistral" # "mixedbread-ai/mxbai-embed-large-v1"
+    emb_dim: 1024
+    pretrained_name: WhereIsAI/UAE-Large-V1
     string_sampling: false
     lr_frac_lm: 0
     max_token_len: 512
   contrastive_loss:
-    func: "clip"
+    func: clip
     temperature: 1
 
 training:

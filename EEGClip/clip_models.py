@@ -4,7 +4,7 @@ import re
 import json
 import numpy as np
 import pandas as pd
-import pytorch_lightning as pl
+import lightning.pytorch as pl
 import torch
 from braindecode.models import Deep4Net
 from braindecode.models.util import to_dense_prediction_model
@@ -396,8 +396,8 @@ class EEGClipModel(pl.LightningModule):
         )
         self.log("val_loss", loss, prog_bar=True)
 
-        print("logits_per_image")
-        print(logits_per_image.shape)
+        #print("logits_per_image")
+        #print(logits_per_image.shape)
 
         return loss
 

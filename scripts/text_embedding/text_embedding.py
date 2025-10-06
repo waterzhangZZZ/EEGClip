@@ -18,6 +18,12 @@ def sentence_embedder(sentence,tokenizer,model,max_length=512):
 
 
 device = torch.device("cuda")
+
+
+model_name = "WhereIsAI/UAE-Large-V1" # "medalpaca/medalpaca-13b" #
+max_length = 2512
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModel.from_pretrained(model_name, device_map="auto")
 """
 from braindecode.datasets import TUHAbnormal
 num_workers = 32
@@ -37,12 +43,10 @@ dataset = TUHAbnormal(
 from EEGClip.text_preprocessing import text_preprocessing
 embs_df = text_preprocessing(dataset.description)
 embs_df = embs_df[["report"]]
-"""
+
 embs_df = pd.read_csv("scripts/text_embedding/embs_df.csv")
+"""
 
-
-model_name = "medalpaca/medalpaca-13b" #"WhereIsAI/UAE-Large-V1"
-max_length = 2512
 """
 bert-base-uncased
 "BAAI/bge-large-en-v1.5"
@@ -54,12 +58,11 @@ mixedbread-ai/mxbai-embed-large-v1
 """
 
 
-tokenizer = AutoTokenizer.from_pretrained(model_name)
-model = AutoModel.from_pretrained(model_name, device_map="auto")
+
 
 #model.to(device)
 
-
+"""
 embs = []
 
 for i, r in enumerate(embs_df["report"]):
@@ -68,7 +71,7 @@ for i, r in enumerate(embs_df["report"]):
     emb = sentence_embedder(r, tokenizer, model, max_length)
 
     embs.append(emb)
-"""
+
 
 # do this in batches
 
@@ -81,48 +84,67 @@ for i in range(0, len(embs_df["report"]), batch_size):
 
     embs_batch = sentence_embedder(sentences, tokenizer, model, max_length)
     embs.append(embs_batch)
-"""
+
 embs_df[model_name] = np.array(embs).tolist()
 
 embs_df.to_csv("scripts/text_embedding/embs_df.csv")
-
+"""
 
 ### Encoding of zero-shot sentences
 
 zc_sentences_dict = {
-    "pathological": {
-        "s0": "This is a normal recording, from an healthy patient",
-        "s1": "This an pathological recording, from a diseased patient  ",
-    },
-    "gender": {"s0": "The patient is female",
-                "s1": "The patient is male"},
-    "under_50": {
-        "s0": "The patient is over 50 years old",
-        "s1": "The patient is under 50 years old",
-    },
-    "medication": {
-        "s0": "The patient is not taking anti-epileptic medication",
-        "s1": "The patient is taking anti-epileptic medication",
-    },
-    "pathological_gender": {
-        "s00": "This is a normal recording, from an healthy male patient",
-        "s01": "This is a normal recording, from an healthy female patient",
-        "s10": "This an pathological recording, from a diseased male patient",
-        "s11": "This an pathological recording, from a diseased female patient"
-    },
-    "pathological_under_50": {
-        "s00": "This is a normal recording, from an healthy patient over 50 years old",
-        "s01": "This is a normal recording, from an healthy patient under 50 years old",
-        "s10": "This an pathological recording, from a diseased patient over 50 years old",
-        "s11": "This an pathological recording, from a diseased patient under 50 years old"
-    },
-    "gender_under_50": {
-        "s00": "The patient is a male over 50 years old",
-        "s01": "The patient is a male under 50 years old",
-        "s10": "The patient is a female over 50 years old",
-        "s11": "The patient is a female under 50 years old"
-    },
-}
+     "additional_sentences": {
+        "s0": "excessive beta activity",
+        "s1": "10 Hz alpha rhythm present during wakefulness",
+        "s2": "Left temporal sharp waves",
+        "s3": "Right frontal focal slowing",
+        "s4": "10 Hz posterior dominant rhythm in occipital regions",
+        "s5": "Left temporal sharp waves with a frequency of 6 Hz",
+        "s6": "3 Hz spike-and-wave discharges",
+        "s7": "Asymmetric alpha rhythm, higher amplitude on right",
+        "s8": "10 Hz alpha rhythm maximal at O1 and O2",
+        "s9": "6 Hz theta activity diffusely present",
+        "s10": "25 Hz beta spindles in central regions",
+        "s11": "Left temporal 4 Hz slow waves",
+
+
+    }
+    }
+"""
+"pathological": {
+    "s0": "This is a normal recording, from an healthy patient",
+    "s1": "This an pathological recording, from a diseased patient  ",
+},
+"gender": {"s0": "The patient is female",
+            "s1": "The patient is male"},
+"under_50": {
+    "s0": "The patient is over 50 years old",
+    "s1": "The patient is under 50 years old",
+},
+"medication": {
+    "s0": "The patient is not taking anti-epileptic medication",
+    "s1": "The patient is taking anti-epileptic medication",
+},
+"pathological_gender": {
+    "s00": "This is a normal recording, from an healthy male patient",
+    "s01": "This is a normal recording, from an healthy female patient",
+    "s10": "This an pathological recording, from a diseased male patient",
+    "s11": "This an pathological recording, from a diseased female patient"
+},
+"pathological_under_50": {
+    "s00": "This is a normal recording, from an healthy patient over 50 years old",
+    "s01": "This is a normal recording, from an healthy patient under 50 years old",
+    "s10": "This an pathological recording, from a diseased patient over 50 years old",
+    "s11": "This an pathological recording, from a diseased patient under 50 years old"
+},
+"gender_under_50": {
+    "s00": "The patient is a male over 50 years old",
+    "s01": "The patient is a male under 50 years old",
+    "s10": "The patient is a female over 50 years old",
+    "s11": "The patient is a female under 50 years old"
+},
+"""
+
 
 
 zc_sentences_model_emb_dict = copy.deepcopy(zc_sentences_dict)

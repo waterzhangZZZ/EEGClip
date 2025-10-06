@@ -20,11 +20,11 @@ if nailcluster:
 # if using KISlurm :
 else:
     results_dir = "results/"
-    tuh_data_dir = "/data/datasets/TUH/EEG/tuh_eeg_abnormal/v2.0.0/edf/"
+    tuh_data_dir = "/nfs/data/nii/data1/Analysis/GPUnet/ANALYSIS_incontext/tuh_eeg_abnormal/tuh_eeg_abnormal/v2.0.0/edf/"
     embs_df_path = (
-        "/home/ndirt/dev/neuro_ai/EEGClip/scripts/text_embedding/embs_df.csv"
+        "/nfs/norasys/notebooks/camaret/neuro_ai/EEGClip/scripts/text_embedding/embs_df.csv"
     )
-    zc_sentences_emb_dict_path = "/home/ndirt/dev/neuro_ai/EEGClip/scripts/text_embedding/zc_sentences_emb_dict.json"
+    zc_sentences_emb_dict_path = "/nfs/norasys/notebooks/camaret/neuro_ai/EEGClip/scripts/text_embedding/zc_sentences_emb_dict.json"
 
 
 # path to models trained on various tasks. Handy for baselines comparisons

@@ -33,6 +33,7 @@ def main(config):
     pprint.pprint(config)
     print("Working directory : {}".format(os.getcwd()))
     args = Args()
+
     args.lr = config.eegclip.lr
     args.lr_frac_lm = config.eegclip.text_encoder.lr_frac_lm
     args.text_encoder_name = config.eegclip.text_encoder.pretrained_name
@@ -44,7 +45,6 @@ def main(config):
     args.processed_categories = config.dataset.processed_categories
     args.text_encoder_trainable = config.eegclip.text_encoder.trainable
     args.text_encoder_emb_dim = config.eegclip.text_encoder.emb_dim
-    args.text_encoder_max_token_len = config.eegclip.text_encoder.max_token_len
     args.n_recordings = config.dataset.n_recordings
     args.n_epochs = config.training.n_epochs
     args.num_workers = config.training.num_workers
@@ -52,12 +52,15 @@ def main(config):
     args.crossval = config.training.cross_validation
     args.n_folds = config.training.n_folds
     args.fold_idx = config.training.fold_idx
-    args.preprocessing = config.dataset.preprocessing
+    
     args.seed = config.training.seed
     args.n_preds_per_input = config.eegclip.eeg_encoder.n_preds_per_input
     args.n_eeg_channels = config.eegclip.eeg_encoder.n_eeg_channels
+ 
     args.contrastive_loss_temperature = config.eegclip.contrastive_loss.temperature
     args.contrastive_loss_func = config.eegclip.contrastive_loss.func
+    args.text_encoder_max_token_len = config.eegclip.text_encoder.max_token_len
+    args.preprocessing = config.dataset.preprocessing
     run_eegclip_training(args)
 
 
@@ -230,7 +233,7 @@ def run_eegclip_training(args):
     wandb_logger = WandbLogger(
         project="EEGClip",
         save_dir=results_dir + "/wandb",
-        log_model=False,
+        log_model=True,
         # checkpoint_name = 'checkpoint.ckpt',
         # tags = ["hpo_emb_size-"]
     )

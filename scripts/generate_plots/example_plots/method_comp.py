@@ -26,7 +26,7 @@ runs_df = runs_df[runs_df.train_frac != 1]
 # Rename weights elements as in your original script
 runs_df["weights"] = runs_df["weights"].replace(
     ["eegclip_frozen", "pathological_frozen", "under_50_frozen", "random_trainable"],
-    ["EEG-Clip", "Irrelevant Task", "Irrelevant Task", "Task-Specific"]
+    ["EEG-Clip", "Alternative Task", "Alternative Task", "Task-Specific"]
 )
 
 # Set plot style with significantly larger font scaling
@@ -59,7 +59,7 @@ line_plot = sns.lineplot(
 
 # Get the unique weight types to assign specific markers
 weight_types = task_data['weights'].unique()
-markers = {'EEG-Clip': 'p', 'Irrelevant Task': 'o', 'Task-Specific': 's'}
+markers = {'EEG-Clip': 'p', 'Alternative Task': 'o', 'Task-Specific': 's'}
 
 # Customize each line and its markers
 for i, line in enumerate(ax.get_lines()):

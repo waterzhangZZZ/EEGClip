@@ -55,7 +55,7 @@ ax.set_ylabel("Balanced accuracy",fontsize=20)
 ax.set_title("Medication")
 ax.tick_params(labelsize=20)
 
-plt.show()
+plt.savefig("results/medication_few_shot.png", bbox_inches='tight', dpi=300)
 # clear figure
 plt.clf()
 
