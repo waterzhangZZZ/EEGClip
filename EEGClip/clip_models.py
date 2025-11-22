@@ -1,3 +1,14 @@
+"""
+clip.models.py
+----class TextEncoder(nn.Module)
+----class EEGEncoder(nn.Module)
+----class ProjectionHead(nn.Module)
+----class EEGClipModel(pl.LightningModule)
+----def on_save_checkpoint(checkpoint)
+
+"""
+
+
 import copy
 import random
 import re
@@ -7,7 +18,8 @@ import pandas as pd
 import lightning.pytorch as pl
 import torch
 from braindecode.models import Deep4Net
-from braindecode.models.util import to_dense_prediction_model
+# from braindecode.models.util import to_dense_prediction_model
+from braindecode.models import Deep4Net
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import balanced_accuracy_score
 from torch import nn
@@ -18,25 +30,35 @@ from transformers import AutoConfig, AutoModel, AutoTokenizer
 import configs.preprocess_config as preprocess_config
 from EEGClip.loss_methods import ClipLoss, SigLipLoss
 
+# 抗癫痫药物名称列表
 medication_list = ["keppra", "dilantin", "depakote"]
+# 自动检测并设置计算设备
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+# 用于模型性能评估
 classifiers_dict = {
     #'knn': KNeighborsClassifier(n_neighbors=10),
     "logreg": LogisticRegression(random_state=0, max_iter=1000)
 }
 
-
+# TextEncoder提供了两种文本嵌入获取方式
+# 1.查找模式：从预计算的CSV文件中快速读取嵌入（训练时更快）
+# 2.计算模式：实时使用HuggingFace模型计算嵌入（更灵活）
 class TextEncoder(nn.Module):
     def __init__(
         self,
-        text_encoder_name,
-        text_encoder_pretrained,
-        text_encoder_trainable,
-        string_sampling=False,
-        lookup_strings=True,  # use previously computed embeddings
-        max_token_len=512,
+        text_encoder_name,          # 文本编码器模型名称
+        text_encoder_pretrained,    # 是否使用预训练模型
+        text_encoder_trainable,     # 文本编码器是否可训练
+        string_sampling=False,      # 是否对字符串进行采样
+        lookup_strings=True,        # 是否使用预计算的嵌入
+        max_token_len=512,          # 最大token长度
     ):
         super().__init__()
+
+
+        # 初始化示例变量和加载配置
+        # 保存所有配置参数到实例变量
+        # 加载零样本句子到嵌入字典（用于零样本分类）
         self.string_sampling = string_sampling
         self.lookup_strings = lookup_strings
         self.text_encoder_name = text_encoder_name
@@ -44,6 +66,11 @@ class TextEncoder(nn.Module):
         with open(preprocess_config.zc_sentences_emb_dict_path, "r") as f:
             self.zc_sentences_emb_dict = json.load(f)
 
+
+        # 如果使用预计算嵌入（默认）
+        # 从CSV文件读取预计算的嵌入数据
+        # 遍历每一行，将字符串格式的嵌入转换为浮点数列表
+        # 保存处理后的DataFrame供后续查找使用
         if self.lookup_strings:
             embs_df = pd.read_csv(preprocess_config.embs_df_path)
             embs_name = text_encoder_name
@@ -58,6 +85,12 @@ class TextEncoder(nn.Module):
                 embs_df[embs_name][r] = re
 
             self.embs_df = embs_df
+
+
+        # 如果不使用预计算嵌入
+        # 根据是否预训练加载相应的模型
+        # 设置模型参数是否可训练（冻结或微调）
+        # 加载对应的分词器
         else:
             if text_encoder_pretrained:
                 self.model = AutoModel.from_pretrained(
@@ -73,7 +106,10 @@ class TextEncoder(nn.Module):
 
             self.tokenizer = AutoTokenizer.from_pretrained(text_encoder_name)
 
+
+    # 前向传播-字符串采样
     def forward(self, string_batch):
+        # 接收预处理后的字符串批次
         string_batch = list(string_batch)
 
         if self.string_sampling:  # randomly sample strings from the report
@@ -89,6 +125,8 @@ class TextEncoder(nn.Module):
                 # sample a random substring
                 string_batch[i] = string[start:end]
 
+
+        # 嵌入查找模式
         if self.lookup_strings:  # lookup precomputed embeddings (faster training)
             embs = []
             for s in string_batch:
@@ -100,6 +138,8 @@ class TextEncoder(nn.Module):
                 embs.append(emb)
             embs = torch.Tensor(embs).to(device)
 
+
+        # 实时计算模式
         else:
             # print(string_batch)
             # string_batch = [s.partition("pijule")[2] for s in string_batch]
@@ -132,10 +172,11 @@ class EEGEncoder(nn.Module):
             in_chans=n_chans,
             n_classes=eeg_model_emb_dim,
             input_window_samples=None,
-            final_conv_length=2,
+            # final_conv_length=2,
+            final_conv_length="auto",
             stride_before_pool=True,
         )
-        to_dense_prediction_model(self.model)
+        # to_dense_prediction_model(self.model)
         if eeg_model_pretrained:
             self.model.load_state_dict(torch.load("deep4net_trained.pt"))
 
@@ -336,6 +377,8 @@ class EEGClipModel(pl.LightningModule):
             1 if int(re.search(r"age: (\d+)", string).group(1)) < 50 else 0
             for string in string_batch
         ]
+        # 自动识别患者是否正在服用抗癫痫药物
+        # 检查每个报告字符串中是否包含这些药物名称，如果有就标记为1，否则为0
         labels_med = [
             1 if any([med in string.lower() for med in medication_list]) else 0
             for string in string_batch

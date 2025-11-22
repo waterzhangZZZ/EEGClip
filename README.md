@@ -28,7 +28,7 @@ pip install -e .
 Generate text embeddings using the ClinicalBERT model:
 
 ```bash
-python scripts/text_preprocessing/text_embedding.py
+python scripts/text_embedding/text_embedding.py
 ```
 
 ### 2. Training EEGClip
